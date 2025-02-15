@@ -6,4 +6,4 @@ steps:
     args: ['push', 'us-central1-docker.pkg.dev/my-first-project-438701/indumathi/app:$COMMIT_SHA']
 
 options:
-  logging: defaultLogsBucketBehavior
+  logging: CLOUD_LOGGING_ONLY
