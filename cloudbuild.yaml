@@ -1,52 +1,26 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'us-central1-docker.pkg.dev/my-first-project-438701/indumathi/my-image:${SHORT_SHA}', '.']
+    args: [
+      'build', '-t',
+      'us-central1-docker.pkg.dev/semester-2-gcp-labs/harish-100989086/app:${SHORT_SHA}',
+      '.'
+    ]
 
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'us-central1-docker.pkg.dev/my-first-project-438701/indumathi/my-image:${SHORT_SHA}']
+    args: [
+      'push',
+      'us-central1-docker.pkg.dev/semester-2-gcp-labs/harish-100989086/app:${SHORT_SHA}'
+    ]
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args: [
+      'run', 'deploy', 'assignment2-service',
+      '--image', 'us-central1-docker.pkg.dev/semester-2-gcp-labs/harish-100989086/app:${SHORT_SHA}',
+      '--region', 'us-central1',
+      '--platform', 'managed',
+      '--allow-unauthenticated'
+    ]
 
 options:
-  defaultLogsBucketBehavior: CLOUD_LOGGING_ONLY
-
-  substitution:
-    _SERVICE_NAME: my-service
-    _PLATFORM_REGION: us-central1
-steps:
-  # Build and tag the app image.
-  - name: "gcr.io/cloud-builders/docker"
-    args:
-      [
-        "build",
-        "-t",
-        "${_PLATFORM_REGION}-docker.pkg.dev/${PROJECT_ID}/${_SERVICE_NAME}/${_SERVICE_NAME}:${SHORT_SHA}",
-        ".",
-      ]
-    id: Build
-
-  # Push the container image to Container Registry.
-  - name: "gcr.io/cloud-builders/docker"
-    args:
-      [
-        "push",
-        "${_PLATFORM_REGION}-docker.pkg.dev/${PROJECT_ID}/${_SERVICE_NAME}/${_SERVICE_NAME}:${SHORT_SHA}",
-      ]
-    id: Push
-
-  # Deploy container image to Cloud Run.
-  - name: "gcr.io/cloud-builders/gcloud"
-    args:
-      [
-        "run",
-        "deploy",
-        "${_SERVICE_NAME}",
-        "--image",
-        "${_PLATFORM_REGION}-docker.pkg.dev/${PROJECT_ID}/${_SERVICE_NAME}/${_SERVICE_NAME}:${SHORT_SHA}",
-        "--region",
-        "${_PLATFORM_REGION}",
-        "--platform",
-        "managed",
-        "--allow-unauthenticated",
-        "--port",
-        "8080"
-      ]
-    id: Deploy 
+  defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
